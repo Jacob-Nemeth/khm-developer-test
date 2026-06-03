@@ -56,6 +56,6 @@ try {
 }
 
 // Submission count displays were moved to index.php
-
+$_SESSION['success'] = 'Your vote has been recorded. Thank you!';
 header('Location: index.php');
 exit;

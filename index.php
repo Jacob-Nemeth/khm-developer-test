@@ -99,6 +99,14 @@ $pdo = new \PDO('sqlite:tv_shows.db');
                         ?>
                     </p>
                 <?php endif; ?>
+                <?php if (isset($_SESSION['success'])): ?>
+                    <p class="text-green-500 text-sm mt-2" id="submission-success-message">
+                        <?php
+                        echo htmlspecialchars($_SESSION['success']);
+                        unset($_SESSION['success']);
+                        ?>
+                    </p>
+                <?php endif; ?>
             </form>
 
         </div>
