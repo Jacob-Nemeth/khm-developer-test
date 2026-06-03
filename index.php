@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<?php
+session_start();
+// Load PDO here to display the current submission counts in index.php without needing to require insert-data.php first, which is intended only for handling form submissions.
+$pdo = new \PDO('sqlite:tv_shows.db');
+?>
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -49,6 +55,13 @@
                     Greatest TV Show<br>of All Time
                 </h1>
                 <p class="mt-3 text-sm text-stone-400">Cast your vote. We'll keep a tally.</p>
+                <ul class="mt-4 space-y-2 font-medium">
+                    <?php
+                    foreach ($pdo->query("SELECT `name`, `count` FROM tv_shows ORDER BY `count` DESC") as $row) {
+                        echo '<li>' . htmlspecialchars($row['name']) . ' (' . $row['count'] . ')</li>';
+                    }
+                    ?>
+                </ul>
             </div>
 
             <!-- Form -->
@@ -78,7 +91,14 @@
                 >
                     Save to database →
                 </button>
-
+                <?php if (isset($_SESSION['error'])): ?>
+                    <p class="text-red-500 text-sm mt-2" id="submission-error-message">
+                        <?php
+                        echo htmlspecialchars($_SESSION['error']);
+                        unset($_SESSION['error']);
+                        ?>
+                    </p>
+                <?php endif; ?>
             </form>
 
         </div>

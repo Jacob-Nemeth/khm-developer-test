@@ -22,4 +22,26 @@ use GuzzleHttp\Exception\RequestException;
  * Guzzle docs: https://docs.guzzlephp.org/en/stable/quickstart.html
  * TVmaze API docs: https://www.tvmaze.com/api#show-search
  */
-$http = new Client();
+$http = new Client(['timeout' => 5, 'verify' => false]);
+
+$tvmaze_query = 'https://api.tvmaze.com/search/shows?q=' . urlencode($_POST['tv-show']);
+
+try {
+    $response = $http->get($tvmaze_query);
+    $results = json_decode($response->getBody(), true);
+    
+    // If the API returns a 404 or an empty array, the show was not found.
+    if ($response->getStatusCode() == 404 || empty($results)) {
+        $_SESSION['error'] = 'TV show not found. Please check the title and try again.';
+        header('Location: index.php');
+        exit;
+    }
+
+    $show_name = $results[0]['show']['name'] ?? $_POST['tv-show'];
+} catch (RequestException $e) {
+    // Report the error to the user, prompt them to retry.
+    $_SESSION['error'] = 'Unable to verify TV show at this time. Please try again later.';
+    header('Location: index.php');
+    exit;
+}
+
